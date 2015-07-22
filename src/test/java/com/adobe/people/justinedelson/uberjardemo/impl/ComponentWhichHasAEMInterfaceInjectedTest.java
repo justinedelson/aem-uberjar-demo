@@ -1,47 +1,55 @@
 package com.adobe.people.justinedelson.uberjardemo.impl;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.day.cq.wcm.api.PageManagerFactory;
 
-@RunWith(MockitoJUnitRunner.class)
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mocked;
+import mockit.Tested;
+import mockit.integration.junit4.JMockit;
+
+@RunWith(JMockit.class)
 public class ComponentWhichHasAEMInterfaceInjectedTest {
 
-    @InjectMocks
+    @Tested
     private ComponentWhichHasAEMInterfaceInjected instance;
 
-    @Mock
+    @Mocked
     private Page page;
 
-    @Mock
+    @Mocked
     private PageManager pageManager;
 
-    @Mock
+    @Injectable
     private PageManagerFactory pageManagerFactory;
 
-    @Mock
+    @Mocked
     private Resource resource;
 
-    @Mock
+    @Mocked
     private ResourceResolver resourceResolver;
 
     @Test
     public void test_that_long_string_is_trimmed() {
-        when(resource.getResourceResolver()).thenReturn(resourceResolver);
-        when(pageManagerFactory.getPageManager(resourceResolver)).thenReturn(pageManager);
-        when(pageManager.getContainingPage(resource)).thenReturn(page);
-        when(page.getTitle()).thenReturn("a really really really really really long string");
+        new Expectations() {{
+            resource.getResourceResolver();
+            result = resourceResolver;
+            pageManagerFactory.getPageManager(resourceResolver);
+            result = pageManager;
+            pageManager.getContainingPage(resource);
+            result = page;
+            page.getTitle();
+            result = "a really really really really really long string";
+        }};
 
         assertEquals("a really", instance.getTrimmedTitle(resource, 8));
     }
